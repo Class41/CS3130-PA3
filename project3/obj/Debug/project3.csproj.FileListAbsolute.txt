@@ -1,0 +1,7 @@
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\bin\Debug\project3.exe.config
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\bin\Debug\project3.exe
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\bin\Debug\project3.pdb
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\obj\Debug\project3.csprojAssemblyReference.cache
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\obj\Debug\project3.csproj.CoreCompileInputs.cache
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\obj\Debug\project3.exe
+C:\Users\crud4\Documents\Visual Studio 2017\Projects\project3\project3\obj\Debug\project3.pdb
