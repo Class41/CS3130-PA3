@@ -10,17 +10,20 @@ namespace project3
 
         static void Main(string[] args) => MenuControl(); //delegate main function to MenuController
 
+        /// <summary>
+        /// <para>Menu loop and initial tree call</para>
+        /// </summary>
         public static void MenuControl()
         {
             InitTree();
             while (true)
             {
                 DrawMenu();
-                char choice = Console.ReadLine()[0];
-                if (choice == 'x')
+                char choice = Console.ReadLine()[0]; // Get character from the stdin
+                if (choice == 'x') // Short-circuit the loop by killing the program prematurely if x is selected.
                     Environment.Exit(0);
 
-                switch (choice)
+                switch (choice) // Menu component - choose what type of action you wish to perform
                 {
                     case '1':
                         TreeTraverse();
@@ -50,7 +53,7 @@ namespace project3
                             }
                             else
                             {
-                                Console.WriteLine("Item not found in BST.");
+                                Console.WriteLine("\nItem not found in BST.");
                             }
                         }
                         catch (Exception)
@@ -76,6 +79,9 @@ namespace project3
             }
         }
 
+        /// <summary>
+        /// <para>Populates the initial tree using the tree insert method</para>
+        /// </summary>
         private static void InitTree()
         {
             foreach (var val in values)
@@ -84,10 +90,13 @@ namespace project3
             }
         }
 
+        /// <summary>
+        /// <para>Draws the menu</para>
+        /// </summary>
         public static void DrawMenu()
         {
             Console.WriteLine(
-                "\nChoose an option:" +
+                "\n\nChoose an option:" +
                 "\n1 - Traverse Tree" +
                 "\n2 - Insert Node" +
                 "\n3 - Search for Node" +
@@ -96,17 +105,22 @@ namespace project3
                 );
         }
 
+        /// <summary>
+        /// <para>Handles node del</para>
+        /// </summary>
+        /// <param name="val"></param>
         private static void TreeDeleteNode(int val)
         {
-            var result = TreeSearch(val);
+            var result = TreeSearch(val); //Search the tree to see if the node exists
 
-            if (result == null)
+            if (result == null) //node does not exist
             {
                 Console.WriteLine("\nFailed to delete node. Node does not exist in tree.");
                 return;
             }
 
-            if (result.self._nodeLeft == null && result.self._nodeRight == null)
+            //Case1: no children : simply wipe the node from the parent
+            if (result.self._nodeLeft == null && result.self._nodeRight == null) 
             {
                 if (result.left)
                     result.parent._nodeLeft = null;
@@ -116,7 +130,8 @@ namespace project3
                 return;
             }
 
-            if (result.self._nodeLeft == null && result.self._nodeRight != null)
+            //Case2: has a right child but no left child : remove current node set child as child of parent
+            if (result.self._nodeLeft == null && result.self._nodeRight != null) 
             {
                 if (result.left)
                     result.parent._nodeLeft = result.self._nodeRight;
@@ -125,8 +140,8 @@ namespace project3
 
                 return;
             }
-
-            if (result.self._nodeRight == null && result.self._nodeLeft != null)
+            //Case3: Has a left child but not right child : remove current node set child as child of parent
+            if (result.self._nodeRight == null && result.self._nodeLeft != null) 
             {
                 if (result.left)
                     result.parent._nodeLeft = result.self._nodeLeft;
@@ -135,12 +150,12 @@ namespace project3
 
                 return;
             }
-
-            if (result.self._nodeRight != null && result.self._nodeLeft != null)
+            //Case4: Has both children : Get successor, take over the children of deletion node, adjust the children of successor
+            if (result.self._nodeRight != null && result.self._nodeLeft != null) 
             {
                 NodeSearchDetail successor = GetSuccessor(result.self);
 
-                if (successor.parent == null)
+                if (successor.parent == null) //if successor is the immediate right node of the deletion node
                 {
                     if (result.left)
                     {
@@ -155,13 +170,13 @@ namespace project3
                 }
                 else
                 {
-                    if (successor.left)
+                    if (successor.left) //since successor is always left-most child of right sub tree, successor can't have left child. 
                         successor.parent._nodeLeft = successor.self._nodeRight;
 
-                    successor.self._nodeLeft = result.self._nodeLeft;
+                    successor.self._nodeLeft = result.self._nodeLeft; //take over the duties of deletion node
                     successor.self._nodeRight = result.self._nodeRight;
 
-                    if (result.parent != null)
+                    if (result.parent != null) //update parent to point to the successor now
                     {
                         if (result.left)
                             result.parent._nodeLeft = successor.self;
@@ -170,42 +185,56 @@ namespace project3
                     }
                     else
                     {
-                        ROOT = successor.self;
+                        ROOT = successor.self; //if the root is being deleted
                     }
 
                 }
             }
         }
 
+        /// <summary>
+        /// <para>Returns the successor along with its parent</para>
+        /// </summary>
+        /// <param name="start"></param>
+        /// <returns></returns>
         private static NodeSearchDetail GetSuccessor(Node start)
         {
             Node parent, current = start._nodeRight;
 
-            if (current._nodeLeft == null && current._nodeRight == null)
+            if (current._nodeLeft == null && current._nodeRight == null) //if it turns out that this is a leaf
                 return new NodeSearchDetail { self = current, parent = null };
 
             do
             {
                 parent = current;
                 current = current._nodeLeft;
-            } while (current._nodeLeft != null);
+            } while (current._nodeLeft != null); //keep going left until we can't anymore
 
 
             return new NodeSearchDetail { self = current, parent = parent, left = (parent._nodeLeft == current) ? true : false };
         }
 
+        /// <summary>
+        /// <para>Searches tree for a specific value</para>
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
         private static NodeSearchDetail TreeSearch(int val)
         {
+            Console.Write("\nExamining: ");
             Node current = ROOT, parent;
 
-            if (current == null)
+            if (current == null) //empty tree
                 return null;
-            if (current._value == val)
+            if (current._value == val) //if the value is the root
                 return new NodeSearchDetail() { parent = null, self = current, left = false };
 
             do
             {
-                if (current._value < val)
+                if (current != null)
+                    Console.Write(current._value + " ");
+
+                if (current._value < val) //compare if the value we are searching for is > or < than the current value node
                 {
                     parent = current;
                     current = current._nodeRight;
@@ -215,17 +244,24 @@ namespace project3
                     parent = current;
                     current = current._nodeLeft;
                 }
-            } while (current != null && current._value != val);
+            } while (current != null && current._value != val); //keep going until the current node is null and the value is not what we want
 
             if (current != null)
+            {
+                Console.Write(current._value + " ");
                 return new NodeSearchDetail() { parent = parent, self = current, left = (parent._nodeLeft == current) ? true : false };
+            }
 
             return null;
         }
 
+        /// <summary>
+        /// <para>Insert a value into the tree</para>
+        /// </summary>
+        /// <param name="val"></param>
         private static void TreeInsert(int val)
         {
-            if (ROOT == null)
+            if (ROOT == null) //insert as root if root is null
             {
                 ROOT = new Node(val);
                 return;
@@ -237,7 +273,7 @@ namespace project3
 
             do
             {
-                if (val > current._value && current != null)
+                if (val > current._value && current != null) //check > or < than root and insert as leaf accordingly
                 {
                     parent = current;
                     current = current._nodeRight;
@@ -258,6 +294,9 @@ namespace project3
                 parent._nodeRight = new Node(val);
         }
 
+        /// <summary>
+        /// <para>Traverses tree in all 3 ways and displays output</para>
+        /// </summary>
         private static void TreeTraverse()
         {
             Console.WriteLine("\nIn-Order: ");
@@ -268,6 +307,10 @@ namespace project3
             TraversePostOrder(ROOT);
         }
 
+        /// <summary>
+        /// <para>Recursive post order function</para>
+        /// </summary>
+        /// <param name="start"></param>
         private static void TraversePostOrder(Node start)
         {
             if (start != null)
@@ -278,6 +321,10 @@ namespace project3
             }
         }
 
+        /// <summary>
+        /// <para>Recursive pre order function</para>
+        /// </summary>
+        /// <param name="start"></param>
         private static void TraversePreOrder(Node start)
         {
             if (start != null)
@@ -288,6 +335,10 @@ namespace project3
             }
         }
 
+        /// <summary>
+        /// <para>Recursive in order function</para>
+        /// </summary>
+        /// <param name="start"></param>
         private static void TraverseInOrder(Node start)
         {
             if (start != null)
@@ -299,12 +350,18 @@ namespace project3
         }
     }
 
+    /// <summary>
+    /// <para>Complex class to hold return data for node and its parent</para>
+    /// </summary>
     public class NodeSearchDetail
     {
         public Node parent, self;
-        public bool left;
+        public bool left; //is self a left child of parent?
     }
 
+    /// <summary>
+    /// <para>Definition of a node</para>
+    /// </summary>
     public class Node
     {
         public int _value;
